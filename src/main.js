@@ -5,10 +5,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // --- CONFIG DATA (Pastikan pakai titik slash ./) ---
 const dataOrgan = [
-    { nama: "Anus", file: "./models/anus.glb", sound: "./sounds/anus.mp3", scale: 1.5 },
-    { nama: "Lambung", file: "./models/lambung.glb", sound: "./sounds/lambung.mp3", scale: 1.5 },
-    { nama: "Mulut", file: "./models/mulut.glb", sound: "./sounds/mulut.mp3", scale: 1.5 },
-    { nama: "Usus", file: "./models/usus.glb", sound: "./sounds/usus.mp3", scale: 1.5 }
+    { nama: "Anus", file: "public/models/anus.glb", sound: "public/sounds/anus.mp3", scale: 1.5 },
+    { nama: "Lambung", file: "public/models/lambung.glb", sound: "public/sounds/lambung.mp3", scale: 1.5 },
+    { nama: "Mulut", file: "public/models/mulut.glb", sound: "public/sounds/mulut.mp3", scale: 1.5 },
+    { nama: "Usus", file: "public/models/usus.glb", sound: "public/sounds/usus.mp3", scale: 1.5 }
 ];
 
 let mindarThree = null;
