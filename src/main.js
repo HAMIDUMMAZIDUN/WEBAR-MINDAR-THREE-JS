@@ -80,7 +80,7 @@ let mindarThree = null;
         try {
             mindarThree = new MindARThree({
                 container: document.body,
-                imageTargetSrc: './targets.mind', // Pastikan pakai ./
+                imageTargetSrc: 'public/targets.mind', // Pastikan pakai ./
                 uiLoading: "no", 
                 uiScanning: "no",
             });
