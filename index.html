@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AR Kelompok 4</title>
+    <style>
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* --- 1. HALAMAN SAMBUTAN --- */
+        #welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white; z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
+            transition: opacity 0.5s ease;
+        }
+
+        /* --- 2. HALAMAN TATA CARA (BARU) --- */
+        #instruction-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #000000 0%, #2c2c2c 100%);
+            color: white; z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
+            transition: opacity 0.5s ease;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px; border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px; width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        h1 { margin: 0 0 10px; font-size: 24px; color: #ffeb3b; }
+        h2 { margin: 0 0 15px; font-size: 22px; color: #fff; }
+        h3 { margin: 0 0 20px; font-size: 18px; font-weight: normal; }
+        
+        ul, ol { text-align: left; margin-bottom: 30px; padding-left: 20px; }
+        li { padding: 5px 0; font-size: 15px; line-height: 1.5; }
+        
+        /* Tombol Umum */
+        button {
+            border: none; padding: 12px 30px;
+            font-size: 16px; font-weight: bold; border-radius: 50px; cursor: pointer;
+            transition: transform 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        #btn-enter { background: #ffeb3b; color: #1e3c72; }
+        #btn-enter:hover { transform: scale(1.05); background: #fff; }
+
+        #btn-agree { background: #fff; color: #11998e; }
+        #btn-agree:hover { transform: scale(1.05); background: #f0f0f0; }
+
+        /* --- AR UI --- */
+        video {
+            position: absolute; top: 0; left: 0; 
+            z-index: 1 !important; width: 100% !important; height: 100% !important; object-fit: cover;
+        }
+        canvas {
+            position: absolute; top: 0; left: 0; 
+            z-index: 2 !important; width: 100% !important; height: 100% !important; pointer-events: none;
+        }
+
+        #scan-guide {
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7); color: lime; padding: 10px 20px; 
+            border: 2px solid lime; border-radius: 20px; font-weight: bold;
+            z-index: 999; text-align: center;
+        }
+
+        .btn-start {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 1000; padding: 15px 40px; background: #e74c3c; color: white;
+            font-size: 18px; border: none; border-radius: 10px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .hidden { display: none !important; opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <div class="card">
+            <h1>TUGAS BESAR RMB</h1>
+            <h3>Simulasi AR Sistem Pencernaan</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li style="border-bottom: 1px solid rgba(255,255,255,0.2); padding: 8px 0;">10122038 - Hamid Abdul Aziz</li>
+                <li style="border-bottom: 1px solid rgba(255,255,255,0.2); padding: 8px 0;">10122027 - Bambang Firman Fatoni</li>
+                <li style="border-bottom: 1px solid rgba(255,255,255,0.2); padding: 8px 0;">10122018 - Mutiara Fatiha</li>
+                <li style="border-bottom: 1px solid rgba(255,255,255,0.2); padding: 8px 0;">10122351 - Rifqi Khoerul Assidiq</li>
+                <li style="border-bottom: none; padding: 8px 0;">10122379 - Andhika Fachrul Mubarrok</li>
+            </ul>
+            <button id="btn-enter">MASUK APLIKASI</button>
+        </div>
+    </div>
+
+    <div id="instruction-screen" class="hidden">
+        <div class="card">
+            <h2>TATA CARA SCAN</h2>
+            <ol>
+                <li>Pastikan ruangan memiliki <strong>cahaya yang cukup</strong>.</li>
+                <li>Siapkan kartu/gambar organ (Anus, Lambung, Mulut, Usus).</li>
+                <li>Izinkan akses <strong>Kamera</strong> pada browser.</li>
+                <li>Arahkan kamera ke gambar hingga muncul garis hijau.</li>
+                <li>Jangan terlalu dekat atau terlalu jauh.</li>
+            </ol>
+            <button id="btn-agree">SAYA PAHAM, LANJUTKAN</button>
+        </div>
+    </div>
+
+    <div id="scan-guide" class="hidden">Scan Gambar Target...</div>
+    
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>

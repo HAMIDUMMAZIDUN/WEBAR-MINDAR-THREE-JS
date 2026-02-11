@@ -1,0 +1,20 @@
+{
+  "name": "aplikasi-pencernaan",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.5.0"
+  },
+  "dependencies": {
+    "firebase": "^12.8.0",
+    "gsap": "^3.14.2",
+    "mind-ar": "^1.2.5",
+    "three": "^0.147.0"
+  }
+}
