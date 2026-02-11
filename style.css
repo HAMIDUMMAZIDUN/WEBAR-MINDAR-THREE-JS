@@ -1,0 +1,183 @@
+/* --- 1. RESET & GLOBAL (PENTING BUAT VIDEO FULL) --- */
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html, body {
+    width: 100%; 
+    height: 100%;
+    margin: 0; 
+    padding: 0;
+    overflow: hidden; /* Mencegah scroll */
+    font-family: 'Poppins', sans-serif;
+    
+    /* INI KUNCINYA: Background harus transparan agar video di belakang terlihat */
+    background-color: transparent !important; 
+    background: none !important;
+}
+
+/* --- 2. PAKSA VIDEO KAMERA FULL SCREEN --- */
+/* MindAR membuat elemen <video> otomatis, kita atur gayanya di sini */
+video {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: cover !important; /* Agar video tidak gepeng/terpotong */
+    z-index: -100 !important; /* Taruh di layer paling belakang */
+    display: block !important;
+    background-color: black; /* Fallback jika kamera belum siap */
+}
+
+/* Canvas AR (Model 3D) harus di atas video */
+canvas {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1 !important; /* Di atas video, di bawah UI */
+    pointer-events: none; /* Agar sentuhan tembus ke UI */
+}
+
+/* --- 3. UI LAYOUT (TAMPILAN MENU) --- */
+#welcome-screen, #instruction-screen {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    z-index: 9999; /* Pastikan menu di paling atas */
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    padding: 20px;
+    
+    /* Background Gradient Gelap untuk Menu */
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* --- 4. STYLE KARTU (GLASSMORPHISM) --- */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1); /* Putih transparan */
+    backdrop-filter: blur(15px);         /* Efek Blur di belakang kartu */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border-radius: 24px;
+    padding: 40px 30px;
+    width: 100%; 
+    max-width: 420px;
+    text-align: center; 
+    color: white;
+}
+
+/* Typografi */
+h1 {
+    font-weight: 800; font-size: 2.2rem;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+}
+h2 { font-weight: 700; color: #fff; margin-bottom: 25px; }
+.subtitle { color: #ccc; font-size: 0.9rem; margin-bottom: 30px; letter-spacing: 1px; }
+
+.badge {
+    display: inline-block; background: rgba(0, 198, 255, 0.2);
+    color: #00c6ff; padding: 5px 15px; border-radius: 50px;
+    font-size: 0.75rem; font-weight: bold; margin-bottom: 15px; letter-spacing: 2px;
+}
+
+/* List Anggota & Instruksi */
+.member-container {
+    text-align: left; margin-bottom: 30px;
+    background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px;
+}
+.member-item {
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.9rem; color: #eee; display: flex; justify-content: space-between;
+}
+.member-item:last-child { border-bottom: none; }
+.member-item span { font-weight: bold; color: #00c6ff; margin-right: 10px; }
+
+.steps-container { margin-bottom: 30px; text-align: left; }
+.step { display: flex; align-items: center; margin-bottom: 15px; }
+.step-number {
+    width: 30px; height: 30px; background: #00c6ff; color: #000;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    font-weight: bold; margin-right: 15px; flex-shrink: 0;
+}
+.step p { font-size: 0.9rem; color: #ddd; margin: 0; }
+
+/* Tombol */
+button {
+    border: none; outline: none; cursor: pointer;
+    font-family: 'Poppins', sans-serif; font-weight: 700;
+    padding: 15px 40px; border-radius: 50px; font-size: 1rem;
+    transition: all 0.3s ease; width: 100%;
+}
+.btn-primary {
+    background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+    color: white; box-shadow: 0 10px 20px rgba(0, 114, 255, 0.3);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0, 114, 255, 0.5); }
+.btn-secondary { background: transparent; border: 2px solid #00c6ff; color: #00c6ff; }
+.btn-secondary:hover { background: #00c6ff; color: white; }
+
+/* Tombol Start Merah (Penting: Z-index harus tinggi) */
+.btn-start {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 10000; /* Paling atas */
+    background: linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%);
+    color: white; width: auto; box-shadow: 0 0 20px rgba(255, 75, 43, 0.5);
+}
+
+/* --- 5. UI HUD (SCANNER & DEBUG) --- */
+#debug-console {
+    position: fixed; top: 20px; left: 20px; width: 200px;
+    background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+    padding: 12px; border-radius: 8px; border-left: 4px solid #00c6ff;
+    z-index: 5000; font-family: 'Courier New', monospace;
+    pointer-events: none; transition: opacity 0.5s;
+}
+.debug-label { font-size: 10px; color: #888; margin-bottom: 4px; letter-spacing: 1px; font-weight: bold; }
+#debug-text { font-size: 12px; color: #fff; line-height: 1.4; font-weight: bold; }
+
+#scan-guide {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 2000;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+.scan-box { width: 280px; height: 280px; position: relative; border-radius: 20px; }
+.corner {
+    position: absolute; width: 40px; height: 40px;
+    border: 4px solid #00ff00; box-shadow: 0 0 10px #00ff00;
+}
+.top-left { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 20px 0 0 0; }
+.top-right { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 20px 0 0; }
+.bottom-left { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 20px; }
+.bottom-right { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 20px 0; }
+
+.scan-line {
+    width: 100%; height: 4px;
+    background: linear-gradient(to right, transparent, #00ff00, transparent);
+    position: absolute; top: 0; box-shadow: 0 0 15px #00ff00;
+    animation: scanMove 3s infinite linear;
+}
+
+#scan-text {
+    margin-top: 30px; font-weight: 600; color: white;
+    background: rgba(0,0,0,0.6); padding: 8px 20px;
+    border-radius: 50px; border: 1px solid rgba(255,255,255,0.3);
+    text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* Animasi & Helper */
+@keyframes scanMove { 0% { top: 10%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { top: 90%; opacity: 0; } }
+@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 198, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 198, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 198, 255, 0); } }
+.pulse-anim { animation: pulse 2s infinite; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+.hidden { display: none !important; opacity: 0; }
