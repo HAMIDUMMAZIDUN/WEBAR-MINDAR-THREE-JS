@@ -1,8 +1,9 @@
+// Menggunakan Import Map dari index.html
 import * as THREE from 'three';
 import { MindARThree } from 'mind-ar/dist/mindar-image-three.prod.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-// --- DATABASE ORGAN ---
+// --- CONFIG DATA (Pastikan pakai titik slash ./) ---
 const dataOrgan = [
     { nama: "Anus", file: "./models/anus.glb", sound: "./sounds/anus.mp3", scale: 1.5 },
     { nama: "Lambung", file: "./models/lambung.glb", sound: "./sounds/lambung.mp3", scale: 1.5 },
@@ -13,19 +14,19 @@ const dataOrgan = [
 let mindarThree = null;
 
 (async () => {
-    // --- REFERENSI UI ---
+    // Referensi UI
     const ui = {
         welcome: document.getElementById('welcome-screen'),
         instruction: document.getElementById('instruction-screen'),
         scanGuide: document.getElementById('scan-guide'),
         scanText: document.getElementById('scan-text'),
-        debugConsole: document.getElementById('debug-console'), // Kotak Info Kiri Atas
+        debugConsole: document.getElementById('debug-console'),
         debugText: document.getElementById('debug-text'),
         btnEnter: document.getElementById('btn-enter'),
         btnAgree: document.getElementById('btn-agree')
     };
 
-    // --- HELPER: UPDATE STATUS KIRI ATAS ---
+    // Helper Status
     const updateStatus = (text, color = "#fff") => {
         if(ui.debugText) {
             ui.debugText.innerText = text;
@@ -34,25 +35,32 @@ let mindarThree = null;
         }
     };
 
-    // --- SETUP AUDIO ---
+    // Audio Setup
     const listener = new THREE.AudioListener();
     const audioLoader = new THREE.AudioLoader();
     let currentSound = null;
 
-    // --- NAVIGASI HALAMAN ---
-    ui.btnEnter.onclick = () => {
-        ui.welcome.classList.add('hidden');
-        ui.instruction.classList.remove('hidden');
-    };
+    // --- EVENT LISTENER TOMBOL (Ini yang bikin stuck kalau error) ---
+    if (ui.btnEnter) {
+        ui.btnEnter.onclick = () => {
+            console.log("Tombol Masuk diklik");
+            ui.welcome.classList.add('hidden');
+            ui.instruction.classList.remove('hidden');
+        };
+    } else {
+        console.error("Tombol btn-enter tidak ditemukan!");
+    }
 
-    ui.btnAgree.onclick = () => {
-        ui.instruction.classList.add('hidden');
-        initAR(); // Masuk ke inisialisasi AR
-    };
+    if (ui.btnAgree) {
+        ui.btnAgree.onclick = () => {
+            console.log("Tombol Setuju diklik");
+            ui.instruction.classList.add('hidden');
+            initAR();
+        };
+    }
 
-    // --- INISIALISASI AR ---
+    // --- LOGIKA AR ---
     const initAR = async () => {
-        // Buat tombol START merah (untuk izin kamera browser)
         const startBtn = document.createElement('button');
         startBtn.innerText = "MULAI KAMERA AR";
         startBtn.className = "btn-start";
@@ -72,7 +80,7 @@ let mindarThree = null;
         try {
             mindarThree = new MindARThree({
                 container: document.body,
-                imageTargetSrc: './targets.mind',
+                imageTargetSrc: './targets.mind', // Pastikan pakai ./
                 uiLoading: "no", 
                 uiScanning: "no",
             });
@@ -88,7 +96,6 @@ let mindarThree = null;
 
             const gltfLoader = new GLTFLoader();
 
-            // --- LOAD MODEL & AUDIO ---
             dataOrgan.forEach((item, index) => {
                 const anchor = mindarThree.addAnchor(index);
                 const sound = new THREE.Audio(listener);
@@ -100,8 +107,6 @@ let mindarThree = null;
 
                 gltfLoader.load(item.file, (gltf) => {
                     const model = gltf.scene;
-                    
-                    // Auto Scale
                     const box = new THREE.Box3().setFromObject(model);
                     const size = box.getSize(new THREE.Vector3());
                     const maxDim = Math.max(size.x, size.y, size.z);
@@ -111,20 +116,19 @@ let mindarThree = null;
                     model.position.set(0, 0, 0); 
                     anchor.group.add(model);
                     
-                    // Animasi Putar
                     const tick = () => {
                         model.rotation.y += 0.01;
                         requestAnimationFrame(tick);
                     };
                     tick();
+                }, undefined, (error) => {
+                    console.error("Gagal load model:", item.file, error);
                 });
 
-                // --- EVENT: TARGET DITEMUKAN ---
                 anchor.onTargetFound = () => {
                     ui.scanText.innerText = `Terdeteksi: ${item.nama}`;
                     ui.scanText.style.color = "#00ff00";
                     ui.scanText.style.borderColor = "#00ff00";
-                    
                     updateStatus(`Model: ${item.nama}`, "#00ff00");
 
                     if (currentSound && currentSound.isPlaying) currentSound.stop();
@@ -134,19 +138,15 @@ let mindarThree = null;
                     }
                 };
 
-                // --- EVENT: TARGET HILANG ---
                 anchor.onTargetLost = () => {
                     ui.scanText.innerText = "Cari Gambar Target...";
                     ui.scanText.style.color = "yellow";
                     ui.scanText.style.borderColor = "yellow";
-                    
                     updateStatus("Mencari Marker...", "orange");
-
                     if (sound.isPlaying) sound.stop();
                 };
             });
 
-            // Resume Audio Context (Penting untuk Chrome)
             if (THREE.AudioContext.getContext().state === 'suspended') {
                 await THREE.AudioContext.getContext().resume();
             }
@@ -160,13 +160,12 @@ let mindarThree = null;
 
         } catch (error) {
             console.error("Error AR:", error);
-            updateStatus("ERROR: Cek Console", "red");
-            alert("Gagal memulai AR. Pastikan izin kamera aktif.");
+            updateStatus("ERROR: Cek Console (F12)", "red");
+            alert("Gagal memulai AR. Pastikan koneksi internet lancar untuk load library.");
         }
     };
 })();
 
-// --- RESIZE HANDLER ---
 window.addEventListener('resize', () => {
     if (mindarThree) {
         const { renderer, camera } = mindarThree;
