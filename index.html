@@ -3,15 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AR Sistem Pencernaan - Kelompok 4</title>
+    <title>AR Sistem Pencernaan - Kelompok 8</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 
-    </head>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "three/examples/": "https://unpkg.com/three@0.160.0/examples/",
+        "mind-ar/": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/"
+      }
+    }
+    </script>
+</head>
 <body>
+
     <div id="debug-console" class="hidden">
         <div class="debug-label">STATUS SISTEM</div>
         <div id="debug-text">Menunggu user...</div>
